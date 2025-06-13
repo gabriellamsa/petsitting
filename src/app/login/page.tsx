@@ -1,22 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { auth } from "../../../.lib/firebase";
+import { auth } from "@/lib/firebase";
 import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
 } from "firebase/auth";
 
-const actionCodeSettings = {
-  url: window.location.origin + "/login",
-  handleCodeInApp: true,
-};
-
 export default function LoginPage() {
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [actionCodeSettings, setActionCodeSettings] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setActionCodeSettings({
+        url: window.location.origin + "/login",
+        handleCodeInApp: true,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const checkSignInLink = async () => {
@@ -43,7 +48,7 @@ export default function LoginPage() {
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
+    if (email.trim() && actionCodeSettings) {
       try {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem("emailForSignIn", email);
