@@ -14,6 +14,7 @@ TrustPaws is a digital platform connecting pet owners with local pet care servic
 - Next.js
 - TypeScript
 - Tailwind CSS
+- Supabase
 
 ## 📝 Status
 
