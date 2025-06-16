@@ -3,14 +3,26 @@
 import Link from "next/link";
 import { useState } from "react";
 import { MenuIcon, X } from "lucide-react";
+import { useUser } from "./UserProvider";
+import { supabase } from "@/lib/supabase";
+import { TbPawFilled } from "react-icons/tb";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, loading } = useUser();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <nav className="w-full bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-gray-900">
+        <Link
+          href="/"
+          className="text-2xl font-bold text-gray-900 flex items-center gap-2"
+        >
+          <TbPawFilled className="text-2xl" />
           TrustPaws
         </Link>
 
@@ -21,9 +33,30 @@ export default function Navbar() {
           <Link href="/services" className="hover:text-black transition">
             Find a pet sitter
           </Link>
-          <Link href="/login" className="hover:text-black transition">
-            Login
-          </Link>
+          {!loading && (
+            <>
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="hover:text-black transition"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="hover:text-black transition"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link href="/login" className="hover:text-black transition">
+                  Login
+                </Link>
+              )}
+            </>
+          )}
         </div>
 
         <button
@@ -50,13 +83,38 @@ export default function Navbar() {
           >
             Find a pet sitter
           </Link>
-          <Link
-            href="/login"
-            className="block hover:text-black"
-            onClick={() => setIsOpen(false)}
-          >
-            Login
-          </Link>
+          {!loading && (
+            <>
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="block hover:text-black"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsOpen(false);
+                    }}
+                    className="block hover:text-black w-full text-left"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block hover:text-black"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+            </>
+          )}
         </div>
       )}
     </nav>
