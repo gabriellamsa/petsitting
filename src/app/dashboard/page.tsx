@@ -2,15 +2,35 @@
 
 import { useUser } from "@/components/UserProvider";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
   const { user, loading } = useUser();
   const router = useRouter();
+  const [firstName, setFirstName] = useState("");
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
+    }
+
+    if (user) {
+      const loadUserProfile = async () => {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("first_name")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error loading user profile:", error.message);
+        } else if (data) {
+          setFirstName(data.first_name || "");
+        }
+      };
+      loadUserProfile();
     }
   }, [user, loading, router]);
 
@@ -31,7 +51,7 @@ export default function DashboardPage() {
       <div className="max-w-3xl mx-auto">
         <div className="bg-white shadow rounded-lg p-6">
           <h1 className="text-2xl font-semibold text-gray-900 mb-6">
-            Welcome, {user.email}!
+            Welcome, {firstName || user.email}!
           </h1>
 
           <div className="space-y-4">
@@ -50,6 +70,14 @@ export default function DashboardPage() {
                   <p className="text-sm text-gray-500">User ID</p>
                   <p className="text-sm font-medium text-gray-900">{user.id}</p>
                 </div>
+              </div>
+              <div className="mt-4">
+                <Link
+                  href="/dashboard/settings"
+                  className="text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200"
+                >
+                  Edit account details
+                </Link>
               </div>
             </div>
 
