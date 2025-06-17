@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useUser } from "@/components/UserProvider";
+import { useUser } from "@/components/shared/UserProvider";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 

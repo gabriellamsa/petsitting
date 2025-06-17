@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@/components/UserProvider";
+import { useUser } from "@/components/shared/UserProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";

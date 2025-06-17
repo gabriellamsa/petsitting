@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { MenuIcon, X } from "lucide-react";
-import { useUser } from "./UserProvider";
+import { useUser } from "@/components/shared/UserProvider";
 import { supabase } from "@/lib/supabase";
 import { TbPawFilled } from "react-icons/tb";
 
