@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "@/components/shared/UserProvider";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { BiShow, BiHide } from "react-icons/bi";
 
 export default function AccountDetailsPage() {
   const { user, loading } = useUser();
@@ -22,6 +23,9 @@ export default function AccountDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -134,6 +138,9 @@ export default function AccountDetailsPage() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
     } catch (err: any) {
       console.error("Error updating password:", err.message);
       setPasswordError(`Failed to update password: ${err.message}`);
@@ -286,14 +293,27 @@ export default function AccountDetailsPage() {
               >
                 Current Password
               </label>
-              <input
-                type="password"
-                id="currentPassword"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                placeholder="Enter current password"
-              />
+              <div className="relative">
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  id="currentPassword"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                  placeholder="Enter current password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  {showCurrentPassword ? (
+                    <BiHide className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <BiShow className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
             </div>
             <div>
               <label
@@ -302,14 +322,27 @@ export default function AccountDetailsPage() {
               >
                 New Password
               </label>
-              <input
-                type="password"
-                id="newPassword"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                placeholder="Enter new password"
-              />
+              <div className="relative">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                  placeholder="Enter new password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? (
+                    <BiHide className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <BiShow className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
             </div>
             <div>
               <label
@@ -318,14 +351,27 @@ export default function AccountDetailsPage() {
               >
                 Confirm New Password
               </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                placeholder="Confirm new password"
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                  placeholder="Confirm new password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <BiHide className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <BiShow className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
