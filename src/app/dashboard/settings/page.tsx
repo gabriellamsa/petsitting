@@ -13,9 +13,15 @@ export default function AccountDetailsPage() {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -80,6 +86,62 @@ export default function AccountDetailsPage() {
     }
   };
 
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordSubmitting(true);
+    setPasswordSuccess(null);
+    setPasswordError(null);
+
+    if (!currentPassword) {
+      setPasswordError("Current password is required");
+      setPasswordSubmitting(false);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("New passwords do not match");
+      setPasswordSubmitting(false);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError("New password must be at least 6 characters long");
+      setPasswordSubmitting(false);
+      return;
+    }
+
+    try {
+      // verify the current password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || "",
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        setPasswordError("Current password is incorrect");
+        setPasswordSubmitting(false);
+        return;
+      }
+
+      // current password is correct, update to new password
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      setPasswordSuccess("Password updated successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      console.error("Error updating password:", err.message);
+      setPasswordError(`Failed to update password: ${err.message}`);
+    } finally {
+      setPasswordSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -94,13 +156,15 @@ export default function AccountDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-          Account details
-        </h1>
-        <p className="text-gray-700 mb-8">
-          Change your personal information and contact details.
-        </p>
+      <div className="max-w-3xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+            Account details
+          </h1>
+          <p className="text-gray-700 mb-8">
+            Change your personal information and contact details.
+          </p>
+        </div>
 
         <form
           onSubmit={handleSubmit}
@@ -142,7 +206,7 @@ export default function AccountDetailsPage() {
             </div>
             <div>
               <label
-                htmlFor="lastName"
+                htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
                 Username
@@ -203,6 +267,82 @@ export default function AccountDetailsPage() {
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? "Saving..." : "Save changes"}
+            </button>
+          </div>
+        </form>
+
+        <form
+          onSubmit={handlePasswordChange}
+          className="space-y-6 bg-white shadow rounded-lg p-6"
+        >
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Change Password
+            </h2>
+            <div>
+              <label
+                htmlFor="currentPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Current Password
+              </label>
+              <input
+                type="password"
+                id="currentPassword"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                placeholder="Enter current password"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
+                New Password
+              </label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                placeholder="Enter new password"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                placeholder="Confirm new password"
+              />
+            </div>
+          </div>
+
+          {passwordSuccess && (
+            <p className="text-sm text-green-600 mt-4">{passwordSuccess}</p>
+          )}
+          {passwordError && (
+            <p className="text-sm text-red-600 mt-4">{passwordError}</p>
+          )}
+
+          <div className="pt-6 border-t border-gray-200 flex justify-end">
+            <button
+              type="submit"
+              disabled={passwordSubmitting}
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {passwordSubmitting ? "Updating..." : "Update password"}
             </button>
           </div>
         </form>
