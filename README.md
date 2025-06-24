@@ -1,13 +1,13 @@
 # TrustPaws 🐾
 
-TrustPaws is a digital platform connecting pet owners with local pet care services. Our mission is to make it easier for pet owners to find reliable pet shops and pet sitters in their area.
+TrustPaws is a digital platform designed to seamlessly connect pet owners with trusted local pet care providers. Our mission is to simplify the process of finding reliable pet shops and sitters in your area.
 
 ## 🌟 Core Features
 
-- Find nearby pet shops and pet sitters
-- Detailed profiles with services and reviews
-- In-home pet care options
-- Direct communication between owners and caregivers
+- Discover nearby pet shops and pet sitters
+- View detailed caregiver profiles, including services and reviews
+- Access in-home pet care options
+- Communicate directly with caregivers
 
 ## 🚀 Tech Stack
 
@@ -16,6 +16,21 @@ TrustPaws is a digital platform connecting pet owners with local pet care servic
 - Tailwind CSS
 - Supabase
 
+## ⚡ Getting Started
+
+To run the project locally:
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+Environment variables for Supabase are required. Refer to `next.config.ts` for the necessary keys.
+
 ## 📝 Status
 
-Project in initial development phase.
+Project is in the initial development phase.
