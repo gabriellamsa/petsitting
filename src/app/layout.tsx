@@ -11,15 +11,14 @@ const font = Poppins({
 
 export const metadata: Metadata = {
   title: "TrustPaws",
-  description:
-    "Find trusted local pet sitters and caretakers for your furry friends.",
+  description: "Encontre cuidadores de pets de confiança próximos a você.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="pt-br">
       <body className={`${font.className} antialiased`}>
         <UserProvider>
           <Navbar />

@@ -41,7 +41,7 @@ export default function AccountDetailsPage() {
           .maybeSingle();
 
         if (error) {
-          console.error("Error loading user profile:", error.message);
+          console.error("Erro ao carregar perfil do usuário:", error.message);
         } else if (data) {
           setFirstName(data.first_name || "");
           setLastName(data.last_name || "");
@@ -60,7 +60,7 @@ export default function AccountDetailsPage() {
     setError(null);
 
     if (!user) {
-      setError("User not logged in.");
+      setError("Usuário não logado.");
       setSubmitting(false);
       return;
     }
@@ -81,10 +81,10 @@ export default function AccountDetailsPage() {
 
       if (error) throw error;
 
-      setSuccess("Changes saved successfully!");
+      setSuccess("Alterações salvas com sucesso!");
     } catch (err: any) {
-      console.error("Error saving changes:", err.message);
-      setError(`Failed to save changes: ${err.message}`);
+      console.error("Erro ao salvar alterações:", err.message);
+      setError(`Falha ao salvar alterações: ${err.message}`);
     } finally {
       setSubmitting(false);
     }
@@ -97,19 +97,19 @@ export default function AccountDetailsPage() {
     setPasswordError(null);
 
     if (!currentPassword) {
-      setPasswordError("Current password is required");
+      setPasswordError("A senha atual é obrigatória");
       setPasswordSubmitting(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match");
+      setPasswordError("As senhas não coincidem");
       setPasswordSubmitting(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      setPasswordError("New password must be at least 6 characters long");
+      setPasswordError("A nova senha deve ter pelo menos 6 caracteres");
       setPasswordSubmitting(false);
       return;
     }
@@ -122,7 +122,7 @@ export default function AccountDetailsPage() {
       });
 
       if (signInError) {
-        setPasswordError("Current password is incorrect");
+        setPasswordError("A senha atual está incorreta");
         setPasswordSubmitting(false);
         return;
       }
@@ -134,7 +134,7 @@ export default function AccountDetailsPage() {
 
       if (error) throw error;
 
-      setPasswordSuccess("Password updated successfully!");
+      setPasswordSuccess("Senha atualizada com sucesso!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -142,8 +142,8 @@ export default function AccountDetailsPage() {
       setShowNewPassword(false);
       setShowConfirmPassword(false);
     } catch (err: any) {
-      console.error("Error updating password:", err.message);
-      setPasswordError(`Failed to update password: ${err.message}`);
+      console.error("Erro ao atualizar senha:", err.message);
+      setPasswordError(`Falha ao atualizar senha: ${err.message}`);
     } finally {
       setPasswordSubmitting(false);
     }
@@ -166,10 +166,10 @@ export default function AccountDetailsPage() {
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-            Account details
+            Detalhes da conta
           </h1>
           <p className="text-gray-700 mb-8">
-            Change your personal information and contact details.
+            Altere suas informações pessoais e detalhes de contato.
           </p>
         </div>
 
@@ -178,14 +178,14 @@ export default function AccountDetailsPage() {
           className="space-y-6 bg-white shadow rounded-lg p-6"
         >
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">Profile</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Perfil</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
                   htmlFor="firstName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  First name
+                  Nome
                 </label>
                 <input
                   type="text"
@@ -200,7 +200,7 @@ export default function AccountDetailsPage() {
                   htmlFor="lastName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Last name
+                  Sobrenome
                 </label>
                 <input
                   type="text"
@@ -216,7 +216,7 @@ export default function AccountDetailsPage() {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
-                Username
+                Usuário
               </label>
               <input
                 type="text"
@@ -230,14 +230,14 @@ export default function AccountDetailsPage() {
 
           <div className="space-y-4 pt-6 border-t border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">
-              Contact details
+              Detalhes de contato
             </h2>
             <div>
               <label
                 htmlFor="emailAddress"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email address
+                Endereço de email
               </label>
               <input
                 type="email"
@@ -252,7 +252,7 @@ export default function AccountDetailsPage() {
                 htmlFor="phoneNumber"
                 className="block text-sm font-medium text-gray-700"
               >
-                Phone number
+                Número de telefone
               </label>
               <input
                 type="tel"
@@ -273,7 +273,7 @@ export default function AccountDetailsPage() {
               disabled={submitting}
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "Saving..." : "Save changes"}
+              {submitting ? "Salvando..." : "Alterações salvas"}
             </button>
           </div>
         </form>
@@ -284,14 +284,14 @@ export default function AccountDetailsPage() {
         >
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-900">
-              Change Password
+              Alterar senha
             </h2>
             <div>
               <label
                 htmlFor="currentPassword"
                 className="block text-sm font-medium text-gray-700"
               >
-                Current Password
+                Senha atual
               </label>
               <div className="relative">
                 <input
@@ -300,7 +300,7 @@ export default function AccountDetailsPage() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                  placeholder="Enter current password"
+                  placeholder="Digite a senha atual"
                 />
                 <button
                   type="button"
@@ -320,7 +320,7 @@ export default function AccountDetailsPage() {
                 htmlFor="newPassword"
                 className="block text-sm font-medium text-gray-700"
               >
-                New Password
+                Nova senha
               </label>
               <div className="relative">
                 <input
@@ -329,7 +329,7 @@ export default function AccountDetailsPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                  placeholder="Enter new password"
+                  placeholder="Digite a nova senha"
                 />
                 <button
                   type="button"
@@ -349,7 +349,7 @@ export default function AccountDetailsPage() {
                 htmlFor="confirmPassword"
                 className="block text-sm font-medium text-gray-700"
               >
-                Confirm New Password
+                Confirmar nova senha
               </label>
               <div className="relative">
                 <input
@@ -358,7 +358,7 @@ export default function AccountDetailsPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                  placeholder="Confirm new password"
+                  placeholder="Confirme a nova senha"
                 />
                 <button
                   type="button"
@@ -388,7 +388,7 @@ export default function AccountDetailsPage() {
               disabled={passwordSubmitting}
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {passwordSubmitting ? "Updating..." : "Update password"}
+              {passwordSubmitting ? "Atualizando..." : "Senha atualizada"}
             </button>
           </div>
         </form>

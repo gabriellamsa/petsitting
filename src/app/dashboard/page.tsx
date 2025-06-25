@@ -25,7 +25,7 @@ export default function DashboardPage() {
           .maybeSingle();
 
         if (error) {
-          console.error("Error loading user profile:", error.message);
+          console.error("Erro ao carregar perfil do usuário:", error.message);
         } else if (data) {
           setFirstName(data.first_name || "");
         }
@@ -52,15 +52,13 @@ export default function DashboardPage() {
         <div className="bg-white shadow rounded-lg p-6">
           <div className="flex justify-between items-start mb-6">
             <h1 className="text-2xl font-semibold text-gray-900">
-              Welcome, {firstName || user.email}!
+              Bem-vindo, {firstName || user.email}!
             </h1>
           </div>
 
           <div className="space-y-4">
             <div className="border-b pb-4">
-              <h2 className="text-lg font-medium text-gray-900 mb-2">
-                Your Profile
-              </h2>
+              <h2 className="text-lg font-medium text-gray-900 mb-2">Perfil</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Email</p>
@@ -78,27 +76,27 @@ export default function DashboardPage() {
                   href="/dashboard/settings"
                   className="text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200"
                 >
-                  Edit account details
+                  Editar detalhes da conta
                 </Link>
               </div>
             </div>
 
             <div className="border-b pb-4">
               <h2 className="text-lg font-medium text-gray-900 mb-2">
-                Account Status
+                Status da conta
               </h2>
               <div className="flex items-center">
                 <span className="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
-                <span className="text-sm text-gray-900">Active</span>
+                <span className="text-sm text-gray-900">Ativo</span>
               </div>
             </div>
 
             <div>
               <h2 className="text-lg font-medium text-gray-900 mb-2">
-                Recent Activity
+                Atividade recente
               </h2>
               <p className="text-sm text-gray-500">
-                Last sign in:{" "}
+                Último login:{" "}
                 {new Date(user.last_sign_in_at || "").toLocaleString()}
               </p>
             </div>

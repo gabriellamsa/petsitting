@@ -28,7 +28,7 @@ export default function LoginPage() {
       window.location.href = "/dashboard";
     } catch (error: any) {
       setError(error.message);
-      console.error("Error signing in:", error);
+      console.error("Erro ao fazer login:", error);
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ export default function LoginPage() {
       setMagicLinkSent(true);
     } catch (error: any) {
       setError(error.message);
-      console.error("Error sending magic link:", error);
+      console.error("Erro ao enviar link:", error);
     } finally {
       setMagicLinkLoading(false);
     }
@@ -63,12 +63,12 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-white px-4">
         <div className="w-full max-w-md bg-white text-center">
           <h2 className="text-xl font-semibold text-gray-900 text-center">
-            Check your email
+            Verifique seu email
           </h2>
           <p className="text-center text-gray-700 text-sm mt-4">
-            A sign-in link has been sent to <strong>{email}</strong>.
+            Um link de login foi enviado para <strong>{email}</strong>.
             <br />
-            Click the link in your inbox to create your account.
+            Clique no link no seu email para criar sua conta.
           </p>
           <div className="text-center mt-6">
             <button
@@ -80,7 +80,7 @@ export default function LoginPage() {
               }}
               className="text-sm text-gray-700 hover:underline"
             >
-              Use a different email
+              Usar um email diferente
             </button>
           </div>
         </div>
@@ -92,12 +92,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <div className="w-full max-w-md bg-white text-center">
         <h1 className="text-3xl font-semibold text-gray-900 mb-6">
-          {isRegistering ? "Join TrustPaws" : "Sign in"}
+          {isRegistering ? "Junte-se ao TrustPaws" : "Entrar"}
         </h1>
         <p className="text-gray-700 mt-2 mb-6">
           {isRegistering
-            ? "Enter your email to receive a secure sign-in link"
-            : "Welcome back! We were hoping we'd see you again…"}
+            ? "Digite seu email para receber um link de login seguro"
+            : "Bem-vindo de volta! Esperávamos ver você de novo…"}
         </p>
 
         {!isRegistering ? (
@@ -125,18 +125,18 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-gray-900 text-white py-2 rounded-md text-sm font-semibold hover:bg-gray-800 disabled:opacity-50"
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? "Entrando..." : " "}
               </button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-gray-700 text-sm">
-                Don't have an account?{" "}
+                Não tem uma conta?{" "}
                 <button
                   onClick={() => setIsRegistering(true)}
                   className="text-gray-900 hover:underline font-semibold"
                 >
-                  Join now
+                  Junte-se agora
                 </button>
               </p>
             </div>
@@ -158,18 +158,20 @@ export default function LoginPage() {
                 disabled={magicLinkLoading}
                 className="w-full bg-gray-900 text-white py-2 rounded-md text-sm font-semibold hover:bg-gray-800 disabled:opacity-50"
               >
-                {magicLinkLoading ? "Sending link..." : "Send sign-in link"}
+                {magicLinkLoading
+                  ? "Enviando link..."
+                  : "Link de login enviado"}
               </button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-gray-700 text-sm">
-                Already have an account?{" "}
+                Já tem uma conta?{" "}
                 <button
                   onClick={() => setIsRegistering(false)}
                   className="text-gray-900 hover:underline font-semibold"
                 >
-                  Sign in
+                  Entrar
                 </button>
               </p>
             </div>

@@ -28,10 +28,10 @@ export default function Navbar() {
 
         <div className="hidden md:flex space-x-8 text-sm font-medium text-gray-700">
           <Link href="/" className="hover:text-black transition">
-            Home
+            Início
           </Link>
           <Link href="/services" className="hover:text-black transition">
-            Find a pet sitter
+            Encontre um cuidador
           </Link>
           {!loading && (
             <>
@@ -41,13 +41,13 @@ export default function Navbar() {
                     href="/dashboard"
                     className="hover:text-black transition"
                   >
-                    Dashboard
+                    Perfil
                   </Link>
                   <button
                     onClick={handleSignOut}
                     className="hover:text-black transition"
                   >
-                    Sign Out
+                    Sair
                   </button>
                 </>
               ) : (
@@ -74,14 +74,14 @@ export default function Navbar() {
             className="block hover:text-black"
             onClick={() => setIsOpen(false)}
           >
-            Home
+            Início
           </Link>
           <Link
             href="/services"
             className="block hover:text-black"
             onClick={() => setIsOpen(false)}
           >
-            Find a pet sitter
+            Encontre um cuidador
           </Link>
           {!loading && (
             <>
@@ -92,7 +92,7 @@ export default function Navbar() {
                     className="block hover:text-black"
                     onClick={() => setIsOpen(false)}
                   >
-                    Dashboard
+                    Perfil
                   </Link>
                   <button
                     onClick={() => {
@@ -101,7 +101,7 @@ export default function Navbar() {
                     }}
                     className="block hover:text-black w-full text-left"
                   >
-                    Sign Out
+                    Sair
                   </button>
                 </>
               ) : (
