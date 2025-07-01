@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import ChooseRole from "../../components/ChooseRole";
 
 export default function DashboardPage() {
   const { user, loading } = useUser();
   const router = useRouter();
   const [firstName, setFirstName] = useState("");
+  const [role, setRole] = useState<string | null>(null);
+  const [checkingRole, setCheckingRole] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -20,7 +23,7 @@ export default function DashboardPage() {
       const loadUserProfile = async () => {
         const { data, error } = await supabase
           .from("profiles")
-          .select("first_name")
+          .select("first_name, role")
           .eq("id", user.id)
           .maybeSingle();
 
@@ -28,13 +31,15 @@ export default function DashboardPage() {
           console.error("Erro ao carregar perfil do usuário:", error.message);
         } else if (data) {
           setFirstName(data.first_name || "");
+          setRole(data.role || null);
         }
+        setCheckingRole(false);
       };
       loadUserProfile();
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || checkingRole) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
@@ -44,6 +49,12 @@ export default function DashboardPage() {
 
   if (!user) {
     return null;
+  }
+
+  if (!role) {
+    return (
+      <ChooseRole userId={user.id} onRoleChosen={() => setRole("chosen")} />
+    );
   }
 
   return (
