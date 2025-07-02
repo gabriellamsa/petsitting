@@ -26,6 +26,7 @@ export default function AccountDetailsPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -36,7 +37,7 @@ export default function AccountDetailsPage() {
       const loadUserData = async () => {
         const { data, error } = await supabase
           .from("profiles")
-          .select("first_name, last_name, username, phone_number")
+          .select("first_name, last_name, username, phone_number, role")
           .eq("id", user.id)
           .maybeSingle();
 
@@ -47,6 +48,7 @@ export default function AccountDetailsPage() {
           setLastName(data.last_name || "");
           setUsername(data.username || "");
           setPhoneNumber(data.phone_number || "");
+          setRole(data.role || null);
         }
       };
       loadUserData();
@@ -73,6 +75,7 @@ export default function AccountDetailsPage() {
         username: username,
         phone_number: phoneNumber,
         updated_at: new Date().toISOString(),
+        role: role,
       };
 
       const { error } = await supabase
@@ -218,6 +221,39 @@ export default function AccountDetailsPage() {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
               />
             </div>
+            {!role ? (
+              <div>
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Escolha seu papel
+                </label>
+                <select
+                  id="role"
+                  value={role || ""}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                  required
+                >
+                  <option value="">Selecione...</option>
+                  <option value="tutor">Tutor</option>
+                  <option value="sitter">Sitter</option>
+                </select>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Seu papel
+                </label>
+                <input
+                  type="text"
+                  value={role === "tutor" ? "Tutor" : "Sitter"}
+                  disabled
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100 text-gray-500 sm:text-sm cursor-not-allowed"
+                />
+              </div>
+            )}
           </div>
 
           <div className="space-y-4 pt-6 border-t border-gray-200">
