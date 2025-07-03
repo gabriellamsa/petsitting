@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 // etapa 1: tipos de pets
 const PET_TYPES = [
@@ -542,10 +543,10 @@ function StepTripLength({
 
 // etapa 8: localização
 function StepLocation({
-  onNext,
+  onFinish,
   onBack,
 }: {
-  onNext: (data: { location: string }) => void;
+  onFinish: (location: string) => void;
   onBack: () => void;
 }) {
   const [location, setLocation] = useState("");
@@ -572,9 +573,9 @@ function StepLocation({
         <button
           className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
           disabled={!location}
-          onClick={() => onNext({ location })}
+          onClick={() => onFinish(location)}
         >
-          Continuar
+          CONCLUIR
         </button>
       </div>
     </div>
@@ -603,6 +604,7 @@ export default function TutorWizard() {
     tripLength: "",
     location: "",
   });
+  const router = useRouter();
 
   function next(data: any) {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -610,6 +612,10 @@ export default function TutorWizard() {
   }
   function back() {
     setStep((prev) => Math.max(0, prev - 1));
+  }
+  function finish(location: string) {
+    setFormData((prev) => ({ ...prev, location }));
+    router.push("/dashboard/tutor");
   }
 
   return (
@@ -647,15 +653,7 @@ export default function TutorWizard() {
             selectedMonths={formData.selectDates as string[]}
           />
         )}
-        {step === 7 && <StepLocation onNext={next} onBack={back} />}
-        {step >= steps.length && (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Finalizado!</h2>
-            <pre className="text-left text-xs bg-gray-100 p-2 rounded">
-              {JSON.stringify(formData, null, 2)}
-            </pre>
-          </div>
-        )}
+        {step === 7 && <StepLocation onFinish={finish} onBack={back} />}
       </div>
     </div>
   );
