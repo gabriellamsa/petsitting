@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { FaUser, FaDog } from "react-icons/fa";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
-export default function ChooseRole({
-  userId,
-  onRoleChosen,
-}: {
-  userId: string;
-  onRoleChosen: () => void;
-}) {
+export default function ChooseRole({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleChoose = async (role: "tutor" | "sitter") => {
     setLoading(true);
     await supabase.from("profiles").update({ role }).eq("id", userId);
     setLoading(false);
-    onRoleChosen();
+    if (role === "tutor") {
+      router.push("/dashboard/tutor");
+    } else {
+      router.push("/dashboard/sitter");
+    }
   };
 
   return (

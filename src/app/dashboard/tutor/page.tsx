@@ -5,15 +5,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import ChooseRole from "../../components/ChooseRole";
 import { FaDog, FaCat, FaMars, FaVenus, FaPlus } from "react-icons/fa";
 
-export default function DashboardPage() {
+export default function TutorDashboard() {
   const { user, loading } = useUser();
   const router = useRouter();
   const [firstName, setFirstName] = useState("");
-  const [role, setRole] = useState<string | null>(null);
-  const [checkingRole, setCheckingRole] = useState(true);
   const [showAddPet, setShowAddPet] = useState(false);
   const [species, setSpecies] = useState("");
   const [gender, setGender] = useState("");
@@ -39,7 +36,7 @@ export default function DashboardPage() {
       const loadUserProfile = async () => {
         const { data, error } = await supabase
           .from("profiles")
-          .select("first_name, role")
+          .select("first_name")
           .eq("id", user.id)
           .maybeSingle();
 
@@ -47,9 +44,7 @@ export default function DashboardPage() {
           console.error("Erro ao carregar perfil do usuário:", error.message);
         } else if (data) {
           setFirstName(data.first_name || "");
-          setRole(data.role || null);
         }
-        setCheckingRole(false);
       };
       loadUserProfile();
     }
@@ -158,7 +153,7 @@ export default function DashboardPage() {
     setPetPhoto(null);
   }
 
-  if (loading || checkingRole) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
@@ -168,12 +163,6 @@ export default function DashboardPage() {
 
   if (!user) {
     return null;
-  }
-
-  if (!role) {
-    return (
-      <ChooseRole userId={user.id} onRoleChosen={() => setRole("chosen")} />
-    );
   }
 
   return (
