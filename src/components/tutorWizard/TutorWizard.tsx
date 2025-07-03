@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 // etapa 1: tipos de pets
 const PET_TYPES = [
@@ -300,53 +300,143 @@ function StepTravelDates({
 }
 
 // etapa 6: seleção de mês/ano
-const MONTHS = [
-  "Jul 2025",
-  "Aug 2025",
-  "Sep 2025",
-  "Oct 2025",
-  "Nov 2025",
-  "Dec 2025",
-];
-function StepSelectDates({
-  onNext,
-  onBack,
-}: {
+
+/**
+ * gera uma lista de meses/anos a partir de um ponto inicial.
+ * @param startMonth mês inicial (0-11)
+ * @param startYear ano inicial
+ * @param count quantidade de meses a gerar
+ */
+function getMonthYearList(
+  startMonth: number,
+  startYear: number,
+  count: number
+) {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const result: { label: string; month: number; year: number }[] = [];
+  let m = startMonth;
+  let y = startYear;
+  for (let i = 0; i < count; i++) {
+    result.push({ label: `${months[m]} ${y}`, month: m, year: y });
+    m++;
+    if (m > 11) {
+      m = 0;
+      y++;
+    }
+  }
+  return result;
+}
+
+interface StepSelectDatesProps {
   onNext: (data: { selectDates: string }) => void;
   onBack: () => void;
-}) {
+}
+
+export function StepSelectDates({ onNext, onBack }: StepSelectDatesProps) {
+  // estado para controlar o início da janela de meses
+  const now = new Date();
+  const [startMonth, setStartMonth] = useState(now.getMonth());
+  const [startYear, setStartYear] = useState(now.getFullYear());
   const [selected, setSelected] = useState<string>("");
+
+  const monthsToShow = 6;
+  const monthList = getMonthYearList(startMonth, startYear, monthsToShow);
+
+  // navega para meses anteriores
+  const handlePrev = useCallback(() => {
+    let newMonth = startMonth - monthsToShow;
+    let newYear = startYear;
+    while (newMonth < 0) {
+      newMonth += 12;
+      newYear--;
+    }
+    setStartMonth(newMonth);
+    setStartYear(newYear);
+  }, [startMonth, startYear]);
+
+  // navega para meses seguintes
+  const handleNext = useCallback(() => {
+    let newMonth = startMonth + monthsToShow;
+    let newYear = startYear;
+    while (newMonth > 11) {
+      newMonth -= 12;
+      newYear++;
+    }
+    setStartMonth(newMonth);
+    setStartYear(newYear);
+  }, [startMonth, startYear]);
+
+  // impede voltar antes do mês atual
+  const isAtCurrent =
+    startMonth === now.getMonth() && startYear === now.getFullYear();
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-2">Quando você vai viajar?</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8 mt-6">
-        {MONTHS.map((month) => (
-          <button
-            key={month}
-            type="button"
-            onClick={() => setSelected(month)}
-            className={`border rounded-lg py-4 px-6 flex flex-col items-center font-medium transition-all
-              ${
-                selected === month
-                  ? "bg-indigo-600 text-white border-indigo-600 shadow"
-                  : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
-              }
-            `}
-          >
-            <span className="text-lg font-semibold">{month.split(" ")[0]}</span>
-            <span className="text-xs">{month.split(" ")[1]}</span>
-          </button>
-        ))}
+      <div className="flex items-center justify-center gap-2 mb-8 mt-6">
+        <button
+          type="button"
+          onClick={handlePrev}
+          className="p-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+          disabled={isAtCurrent}
+          aria-label="Meses anteriores"
+        >
+          <span aria-hidden="true">&#8592;</span>
+        </button>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {monthList.map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => setSelected(item.label)}
+              className={`border rounded-lg py-4 px-6 flex flex-col items-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500
+                ${
+                  selected === item.label
+                    ? "bg-indigo-600 text-white border-indigo-600 shadow"
+                    : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
+                }
+              `}
+              aria-pressed={selected === item.label}
+              aria-label={`Selecionar ${item.label}`}
+            >
+              <span className="text-lg font-semibold">
+                {item.label.split(" ")[0]}
+              </span>
+              <span className="text-xs">{item.label.split(" ")[1]}</span>
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={handleNext}
+          className="p-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          aria-label="Próximos meses"
+        >
+          <span aria-hidden="true">&#8594;</span>
+        </button>
       </div>
       <div className="flex justify-between">
         <button
-          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           onClick={onBack}
         >
           Voltar
         </button>
         <button
-          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           disabled={!selected}
           onClick={() => onNext({ selectDates: selected })}
         >
