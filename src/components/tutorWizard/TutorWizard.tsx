@@ -1,0 +1,528 @@
+"use client";
+import { useState } from "react";
+
+// etapa 1: tipos de pets
+const PET_TYPES = [
+  { key: "dog", label: "Cachorro" },
+  { key: "cat", label: "Gato" },
+  { key: "poultry", label: "Aves de curral" },
+  { key: "horse", label: "Cavalo" },
+  { key: "fish", label: "Peixe" },
+  { key: "bird", label: "Pássaro" },
+  { key: "reptile", label: "Réptil" },
+  { key: "livestock", label: "Animais de fazenda" },
+  { key: "small", label: "Pequenos pets" },
+];
+function StepPetTypes({
+  onNext,
+}: {
+  onNext: (data: { petTypes: string[] }) => void;
+}) {
+  const [selected, setSelected] = useState<string[]>([]);
+  function toggleType(type: string) {
+    setSelected((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  }
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-2">Quais pets você tem?</h2>
+      <p className="text-gray-600 mb-6">
+        De cães a animais de fazenda, vamos te ajudar a encontrar o cuidador
+        perfeito. Escolha quantos tipos de pets você quiser.
+      </p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+        {PET_TYPES.map((pet) => (
+          <button
+            key={pet.key}
+            type="button"
+            onClick={() => toggleType(pet.key)}
+            className={`border rounded-lg py-3 px-4 flex items-center justify-center font-medium transition-all
+              ${
+                selected.includes(pet.key)
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow"
+                  : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
+              }
+            `}
+          >
+            {pet.label}
+          </button>
+        ))}
+      </div>
+      <button
+        className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
+        disabled={selected.length === 0}
+        onClick={() => onNext({ petTypes: selected })}
+      >
+        Continuar
+      </button>
+    </div>
+  );
+}
+
+// etapa 2: quantidade de pets
+const PET_LABELS: Record<string, string> = {
+  dog: "Cachorros",
+  cat: "Gatos",
+  poultry: "Aves de curral",
+  horse: "Cavalos",
+  fish: "Peixes",
+  bird: "Pássaros",
+  reptile: "Répteis",
+  livestock: "Animais de fazenda",
+  small: "Pequenos pets",
+};
+function StepPetCount({
+  petTypes,
+  onNext,
+  onBack,
+}: {
+  petTypes: string[];
+  onNext: (data: { petCount: Record<string, number> }) => void;
+  onBack: () => void;
+}) {
+  const [counts, setCounts] = useState<Record<string, number>>(() => {
+    const obj: Record<string, number> = {};
+    petTypes.forEach((type) => (obj[type] = 1));
+    return obj;
+  });
+  function setCount(type: string, value: number) {
+    setCounts((prev) => ({ ...prev, [type]: Math.max(1, value) }));
+  }
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-2">Quantos pets você tem?</h2>
+      <div className="space-y-4 mb-8">
+        {petTypes.map((type) => (
+          <div key={type} className="flex items-center gap-4 justify-center">
+            <span className="font-medium w-32 text-left">
+              {PET_LABELS[type]}
+            </span>
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full bg-gray-200 text-lg font-bold"
+              onClick={() => setCount(type, counts[type] - 1)}
+              disabled={counts[type] <= 1}
+            >
+              -
+            </button>
+            <span className="w-8 text-center font-semibold">
+              {counts[type]}
+            </span>
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full bg-gray-200 text-lg font-bold"
+              onClick={() => setCount(type, counts[type] + 1)}
+            >
+              +
+            </button>
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-between">
+        <button
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          onClick={onBack}
+        >
+          Voltar
+        </button>
+        <button
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg"
+          onClick={() => onNext({ petCount: counts })}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// etapa 3: necessidades específicas
+const NEEDS = [
+  "Cães ou gatos idosos",
+  "Filhotes de cães ou gatos",
+  "Administração de medicação",
+  "Cães especialmente grandes",
+  "Gatos ansiosos ou nervosos",
+  "Animais exóticos",
+  "Animais de fazenda",
+  "Nenhuma das opções acima",
+];
+function StepPetNeeds({
+  onNext,
+  onBack,
+}: {
+  onNext: (data: { petNeeds: string[] }) => void;
+  onBack: () => void;
+}) {
+  const [selected, setSelected] = useState<string[]>([]);
+  function toggleNeed(need: string) {
+    setSelected((prev) =>
+      prev.includes(need) ? prev.filter((n) => n !== need) : [...prev, need]
+    );
+  }
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-2">
+        Seu cuidador precisa de experiência específica?
+      </h2>
+      <p className="text-gray-600 mb-6">
+        Muitos dos nossos cuidadores têm experiência e habilidades em cuidados
+        com pets. Vamos te ajudar a encontrar o ideal.
+      </p>
+      <div className="flex flex-col gap-4 mb-8">
+        {NEEDS.map((need) => (
+          <button
+            key={need}
+            type="button"
+            onClick={() => toggleNeed(need)}
+            className={`border rounded-lg py-3 px-4 text-left font-medium transition-all
+              ${
+                selected.includes(need)
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow"
+                  : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
+              }
+            `}
+          >
+            {need}
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-between">
+        <button
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          onClick={onBack}
+        >
+          Voltar
+        </button>
+        <button
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg"
+          onClick={() => onNext({ petNeeds: selected })}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// etapa 4: mensagem informativa
+function StepInfo({
+  onNext,
+  onBack,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">
+        Veterinários concordam. Pets são mais felizes em casa
+      </h2>
+      <p className="text-gray-600 mb-8">
+        Pets são mais felizes em casa quando seus tutores viajam. Eles respondem
+        melhor a um cuidador no próprio lar do que a novos ambientes, como
+        hotéis para pets.
+      </p>
+      <div className="flex justify-between">
+        <button
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          onClick={onBack}
+        >
+          Voltar
+        </button>
+        <button
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg"
+          onClick={onNext}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// etapa 5: quando vai viajar
+function StepTravelDates({
+  onNext,
+  onBack,
+}: {
+  onNext: (data: { travelDates: string }) => void;
+  onBack: () => void;
+}) {
+  const [option, setOption] = useState<string>("");
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-2">Quando você vai viajar?</h2>
+      <p className="text-gray-600 mb-6">
+        De férias do ano que vem a viagens de última hora, encontre um cuidador
+        para qualquer viagem.
+      </p>
+      <div className="flex flex-col gap-4 mb-8">
+        <button
+          className={`border rounded-lg py-3 px-4 text-left font-medium transition-all ${
+            option === "know"
+              ? "bg-indigo-600 text-white border-indigo-600 shadow"
+              : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
+          }`}
+          onClick={() => setOption("know")}
+        >
+          Eu sei as datas
+        </button>
+        <button
+          className={`border rounded-lg py-3 px-4 text-left font-medium transition-all ${
+            option === "thinking"
+              ? "bg-indigo-600 text-white border-indigo-600 shadow"
+              : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
+          }`}
+          onClick={() => setOption("thinking")}
+        >
+          Ainda estou pensando
+        </button>
+      </div>
+      <div className="flex justify-between">
+        <button
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          onClick={onBack}
+        >
+          Voltar
+        </button>
+        <button
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
+          disabled={!option}
+          onClick={() => onNext({ travelDates: option })}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// etapa 6: seleção de mês/ano
+const MONTHS = [
+  "Jul 2025",
+  "Aug 2025",
+  "Sep 2025",
+  "Oct 2025",
+  "Nov 2025",
+  "Dec 2025",
+];
+function StepSelectDates({
+  onNext,
+  onBack,
+}: {
+  onNext: (data: { selectDates: string }) => void;
+  onBack: () => void;
+}) {
+  const [selected, setSelected] = useState<string>("");
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-2">Quando você vai viajar?</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8 mt-6">
+        {MONTHS.map((month) => (
+          <button
+            key={month}
+            type="button"
+            onClick={() => setSelected(month)}
+            className={`border rounded-lg py-4 px-6 flex flex-col items-center font-medium transition-all
+              ${
+                selected === month
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow"
+                  : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
+              }
+            `}
+          >
+            <span className="text-lg font-semibold">{month.split(" ")[0]}</span>
+            <span className="text-xs">{month.split(" ")[1]}</span>
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-between">
+        <button
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          onClick={onBack}
+        >
+          Voltar
+        </button>
+        <button
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
+          disabled={!selected}
+          onClick={() => onNext({ selectDates: selected })}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// etapa 7: duração da viagem
+const OPTIONS = [
+  "Alguns dias",
+  "Uma ou duas semanas",
+  "Cerca de um mês",
+  "Mais de um mês",
+];
+function StepTripLength({
+  onNext,
+  onBack,
+}: {
+  onNext: (data: { tripLength: string }) => void;
+  onBack: () => void;
+}) {
+  const [selected, setSelected] = useState<string>("");
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-2">Quanto tempo dura sua viagem?</h2>
+      <div className="flex flex-col gap-4 mb-8 mt-6">
+        {OPTIONS.map((opt) => (
+          <button
+            key={opt}
+            type="button"
+            onClick={() => setSelected(opt)}
+            className={`border rounded-lg py-3 px-4 text-left font-medium transition-all
+              ${
+                selected === opt
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow"
+                  : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
+              }
+            `}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-between">
+        <button
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          onClick={onBack}
+        >
+          Voltar
+        </button>
+        <button
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
+          disabled={!selected}
+          onClick={() => onNext({ tripLength: selected })}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// etapa 8: localização
+function StepLocation({
+  onNext,
+  onBack,
+}: {
+  onNext: (data: { location: string }) => void;
+  onBack: () => void;
+}) {
+  const [location, setLocation] = useState("");
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-2">Onde você está no mundo?</h2>
+      <p className="text-gray-600 mb-6">
+        Só vamos compartilhar sua localização exata com cuidadores confirmados.
+      </p>
+      <input
+        type="text"
+        placeholder="Continente, país, cidade ou bairro"
+        className="w-full border border-gray-300 rounded-md p-3 mb-8 text-lg"
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+      />
+      <div className="flex justify-between">
+        <button
+          className="px-6 py-2 rounded-lg border border-gray-400 text-gray-700 font-semibold bg-white hover:bg-gray-50"
+          onClick={onBack}
+        >
+          Voltar
+        </button>
+        <button
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
+          disabled={!location}
+          onClick={() => onNext({ location })}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const steps = [
+  "petTypes",
+  "petCount",
+  "petNeeds",
+  "info",
+  "travelDates",
+  "selectDates",
+  "tripLength",
+  "location",
+];
+
+export default function TutorWizard() {
+  const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState({
+    petTypes: [],
+    petCount: {},
+    petNeeds: [],
+    travelDates: "",
+    selectDates: "",
+    tripLength: "",
+    location: "",
+  });
+
+  function next(data: any) {
+    setFormData((prev) => ({ ...prev, ...data }));
+    setStep((prev) => prev + 1);
+  }
+  function back() {
+    setStep((prev) => Math.max(0, prev - 1));
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-lg w-full text-center">
+        <div className="mb-6">
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+            <div
+              className="bg-indigo-600 h-2 rounded-full"
+              style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+            ></div>
+          </div>
+          <span className="text-sm text-gray-500">
+            Passo {step + 1} de {steps.length}
+          </span>
+        </div>
+        {step === 0 && <StepPetTypes onNext={next} />}
+        {step === 1 && (
+          <StepPetCount
+            petTypes={formData.petTypes as string[]}
+            onNext={next}
+            onBack={back}
+          />
+        )}
+        {step === 2 && <StepPetNeeds onNext={next} onBack={back} />}
+        {step === 3 && (
+          <StepInfo onNext={() => setStep(step + 1)} onBack={back} />
+        )}
+        {step === 4 && <StepTravelDates onNext={next} onBack={back} />}
+        {step === 5 && <StepSelectDates onNext={next} onBack={back} />}
+        {step === 6 && <StepTripLength onNext={next} onBack={back} />}
+        {step === 7 && <StepLocation onNext={next} onBack={back} />}
+        {step >= steps.length && (
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Finalizado!</h2>
+            <pre className="text-left text-xs bg-gray-100 p-2 rounded">
+              {JSON.stringify(formData, null, 2)}
+            </pre>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

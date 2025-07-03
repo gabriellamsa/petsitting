@@ -1,24 +1,46 @@
 "use client";
 import { useUser } from "@/components/shared/UserProvider";
-import { useEffect, useState } from "react";
-import { FaUser, FaDog } from "react-icons/fa";
-import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { FaUser, FaDog } from "react-icons/fa";
 
-export default function ChooseRole({ userId }: { userId: string }) {
-  const [loading, setLoading] = useState(false);
+export default function FirstLoginPage() {
+  const { user, loading } = useUser();
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChoose = async (role: "tutor" | "sitter") => {
-    setLoading(true);
-    await supabase.from("profiles").update({ role }).eq("id", userId);
-    setLoading(false);
+    if (!user) return;
+    setSaving(true);
+    setError(null);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ role })
+      .eq("id", user.id);
+    setSaving(false);
+    if (error) {
+      setError("Erro ao salvar escolha. Tente novamente.");
+      return;
+    }
     if (role === "tutor") {
-      router.push("/dashboard/tutor/onboarding");
+      router.replace("/dashboard/tutor/onboarding");
     } else {
-      router.push("/dashboard/sitter");
+      router.replace("/dashboard/sitter");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Carregando...
+      </div>
+    );
+  }
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -29,7 +51,7 @@ export default function ChooseRole({ userId }: { userId: string }) {
         <div className="flex flex-col gap-6">
           <button
             onClick={() => handleChoose("tutor")}
-            disabled={loading}
+            disabled={saving}
             className="flex flex-col items-center gap-2 p-6 border rounded-lg hover:shadow-lg transition cursor-pointer bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           >
             <FaUser className="text-4xl text-indigo-600" />
@@ -42,7 +64,7 @@ export default function ChooseRole({ userId }: { userId: string }) {
           </button>
           <button
             onClick={() => handleChoose("sitter")}
-            disabled={loading}
+            disabled={saving}
             className="flex flex-col items-center gap-2 p-6 border rounded-lg hover:shadow-lg transition cursor-pointer bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-pink-500 focus:outline-none"
           >
             <FaDog className="text-4xl text-pink-600" />
@@ -54,6 +76,7 @@ export default function ChooseRole({ userId }: { userId: string }) {
             </span>
           </button>
         </div>
+        {error && <div className="text-red-600 mt-4">{error}</div>}
       </div>
     </div>
   );
