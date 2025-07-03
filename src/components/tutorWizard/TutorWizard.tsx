@@ -258,6 +258,15 @@ function StepTravelDates({
         De férias do ano que vem a viagens de última hora, encontre um cuidador
         para qualquer viagem.
       </p>
+      <div className="flex justify-end mb-2">
+        <button
+          type="button"
+          className="text-indigo-600 underline text-sm font-medium hover:text-indigo-800"
+          onClick={() => onNext({ travelDates: "" })}
+        >
+          Pular
+        </button>
+      </div>
       <div className="flex flex-col gap-4 mb-8">
         <button
           className={`border rounded-lg py-3 px-4 text-left font-medium transition-all ${
@@ -265,7 +274,10 @@ function StepTravelDates({
               ? "bg-indigo-600 text-white border-indigo-600 shadow"
               : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
           }`}
-          onClick={() => setOption("know")}
+          onClick={() => {
+            setOption("know");
+            onNext({ travelDates: "know" });
+          }}
         >
           Eu sei as datas
         </button>
@@ -275,7 +287,10 @@ function StepTravelDates({
               ? "bg-indigo-600 text-white border-indigo-600 shadow"
               : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
           }`}
-          onClick={() => setOption("thinking")}
+          onClick={() => {
+            setOption("thinking");
+            onNext({ travelDates: "thinking" });
+          }}
         >
           Ainda estou pensando
         </button>
@@ -287,20 +302,12 @@ function StepTravelDates({
         >
           Voltar
         </button>
-        <button
-          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50"
-          disabled={!option}
-          onClick={() => onNext({ travelDates: option })}
-        >
-          Continuar
-        </button>
       </div>
     </div>
   );
 }
 
 // etapa 6: seleção de mês/ano
-
 /**
  * gera uma lista de meses/anos a partir de um ponto inicial.
  * @param startMonth mês inicial (0-11)
@@ -341,7 +348,7 @@ function getMonthYearList(
 }
 
 interface StepSelectDatesProps {
-  onNext: (data: { selectDates: string }) => void;
+  onNext: (data: { selectDates: string[] }) => void;
   onBack: () => void;
 }
 
@@ -350,7 +357,7 @@ export function StepSelectDates({ onNext, onBack }: StepSelectDatesProps) {
   const now = new Date();
   const [startMonth, setStartMonth] = useState(now.getMonth());
   const [startYear, setStartYear] = useState(now.getFullYear());
-  const [selected, setSelected] = useState<string>("");
+  const [selected, setSelected] = useState<string[]>([]);
 
   const monthsToShow = 6;
   const monthList = getMonthYearList(startMonth, startYear, monthsToShow);
@@ -383,9 +390,24 @@ export function StepSelectDates({ onNext, onBack }: StepSelectDatesProps) {
   const isAtCurrent =
     startMonth === now.getMonth() && startYear === now.getFullYear();
 
+  function toggleMonth(label: string) {
+    setSelected((prev) =>
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
+    );
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-2">Quando você vai viajar?</h2>
+      <div className="flex justify-end mb-2">
+        <button
+          type="button"
+          className="text-indigo-600 underline text-sm font-medium hover:text-indigo-800"
+          onClick={() => onNext({ selectDates: [] })}
+        >
+          Pular
+        </button>
+      </div>
       <div className="flex items-center justify-center gap-2 mb-8 mt-6">
         <button
           type="button"
@@ -401,15 +423,15 @@ export function StepSelectDates({ onNext, onBack }: StepSelectDatesProps) {
             <button
               key={item.label}
               type="button"
-              onClick={() => setSelected(item.label)}
+              onClick={() => toggleMonth(item.label)}
               className={`border rounded-lg py-4 px-6 flex flex-col items-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500
                 ${
-                  selected === item.label
+                  selected.includes(item.label)
                     ? "bg-indigo-600 text-white border-indigo-600 shadow"
                     : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"
                 }
               `}
-              aria-pressed={selected === item.label}
+              aria-pressed={selected.includes(item.label)}
               aria-label={`Selecionar ${item.label}`}
             >
               <span className="text-lg font-semibold">
@@ -437,7 +459,7 @@ export function StepSelectDates({ onNext, onBack }: StepSelectDatesProps) {
         </button>
         <button
           className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-lg disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          disabled={!selected}
+          disabled={selected.length === 0}
           onClick={() => onNext({ selectDates: selected })}
         >
           Continuar
@@ -457,14 +479,30 @@ const OPTIONS = [
 function StepTripLength({
   onNext,
   onBack,
+  selectedMonths,
 }: {
   onNext: (data: { tripLength: string }) => void;
   onBack: () => void;
+  selectedMonths?: string[];
 }) {
   const [selected, setSelected] = useState<string>("");
   return (
     <div>
       <h2 className="text-2xl font-bold mb-2">Quanto tempo dura sua viagem?</h2>
+      {selectedMonths && selectedMonths.length > 0 && (
+        <div className="mb-2 text-indigo-700 font-semibold">
+          Meses selecionados: {selectedMonths.join(", ")}
+        </div>
+      )}
+      <div className="flex justify-end mb-2">
+        <button
+          type="button"
+          className="text-indigo-600 underline text-sm font-medium hover:text-indigo-800"
+          onClick={() => onNext({ tripLength: "" })}
+        >
+          Pular
+        </button>
+      </div>
       <div className="flex flex-col gap-4 mb-8 mt-6">
         {OPTIONS.map((opt) => (
           <button
@@ -561,7 +599,7 @@ export default function TutorWizard() {
     petCount: {},
     petNeeds: [],
     travelDates: "",
-    selectDates: "",
+    selectDates: [],
     tripLength: "",
     location: "",
   });
@@ -602,7 +640,13 @@ export default function TutorWizard() {
         )}
         {step === 4 && <StepTravelDates onNext={next} onBack={back} />}
         {step === 5 && <StepSelectDates onNext={next} onBack={back} />}
-        {step === 6 && <StepTripLength onNext={next} onBack={back} />}
+        {step === 6 && (
+          <StepTripLength
+            onNext={next}
+            onBack={back}
+            selectedMonths={formData.selectDates as string[]}
+          />
+        )}
         {step === 7 && <StepLocation onNext={next} onBack={back} />}
         {step >= steps.length && (
           <div>
