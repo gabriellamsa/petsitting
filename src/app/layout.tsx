@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import { UserProvider } from "@/components/shared/UserProvider";
+import ProfileAutoCreate from "@/components/shared/ProfileAutoCreate";
 
 const font = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="pt-br">
       <body className={`${font.className} antialiased`}>
         <UserProvider>
+          <ProfileAutoCreate />
           <Navbar />
           <div>{children}</div>
         </UserProvider>

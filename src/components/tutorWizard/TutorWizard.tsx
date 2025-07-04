@@ -1,6 +1,8 @@
 "use client";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { useUser } from "@/components/shared/UserProvider";
 
 // etapa 1: tipos de pets
 const PET_TYPES = [
@@ -605,6 +607,7 @@ export default function TutorWizard() {
     location: "",
   });
   const router = useRouter();
+  const { user } = useUser();
 
   function next(data: any) {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -613,8 +616,52 @@ export default function TutorWizard() {
   function back() {
     setStep((prev) => Math.max(0, prev - 1));
   }
-  function finish(location: string) {
+  async function finish(location: string) {
     setFormData((prev) => ({ ...prev, location }));
+
+    if (!user) {
+      alert("Usuário não autenticado!");
+      return;
+    }
+
+    // garante que o profile existe
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!profile) {
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
+          id: user.id,
+          email: user.email,
+          role: "tutor",
+        },
+      ]);
+      if (profileError) {
+        alert("Erro ao criar perfil: " + profileError.message);
+        return;
+      }
+    }
+
+    // monta o objeto para pets_profile (apenas tipos, quantidade e localização)
+    const wizardData = {
+      user_id: user.id,
+      pet_types: JSON.stringify(formData.petTypes),
+      pet_count: JSON.stringify(formData.petCount),
+      location: location,
+      created_at: new Date().toISOString(),
+    };
+
+    // salva no Supabase
+    const { error } = await supabase.from("pets_profile").insert([wizardData]);
+
+    if (error) {
+      alert("Erro ao salvar dados do wizard: " + error.message);
+      return;
+    }
+
     router.push("/dashboard/tutor");
   }
 
